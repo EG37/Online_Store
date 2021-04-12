@@ -1,8 +1,11 @@
 from flask import Flask
+from data import db_session
+from data.store import Store
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'store_secret_key'
+db_session.global_init("db/store_database.db")
+store = Store()
 
 
 def main():
