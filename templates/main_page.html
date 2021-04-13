@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+<div class="container" style="width: 100%; margin-top: 2%; float: left; margin-left: 10%">
+    <div class="row" style="margin-bottom: 2%;">
+        <div class="col-12">
+            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <div class="carousel-item active">
+                  <img src="/static/img/delivery.png" class="d-block w-100" alt="..." style="border-radius: 10px">
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    {% for i in range(items.length) %}
+    <div class="row" style="margin-top: 2%; margin-bottom: 2%;">
+        <div class="col-4 item-card" style="height: 600px; position: relative">
+            <div class="item-card" style="border: 1px solid LightGrey; border-radius: 5px; height: 100%">
+                {% set item = items['items'][i * 3 + 0] %}
+                <img src="/static/img/items/{{ item.photo_name }}" style="width: 100%; border-radius: 5px">
+                <div class="item-card__bottom" style="padding: 5%">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <a href="/item/{{ item.id }}" class="btn btn-primary" style="margin-bottom: 5%">Посмотреть</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-4 item-card" style="height: 600px; position: relative">
+             <div class="item-card" style="border: 1px solid LightGrey; border-radius: 5px; height: 100%">
+                 {% set item = items['items'][i * 3 + 1] %}
+                 <img src="/static/img/items/{{ item.photo_name }}" style="width: 100%; border-radius: 5px">
+                 <div class="item-card__bottom" style="padding: 5%">
+                     <h5 class="card-title">{{ item.name }}</h5>
+                     <a href="/item/{{ item.id }}" class="btn btn-primary" style="margin-bottom: 5%">Посмотреть</a>
+                 </div>
+             </div>
+        </div>
+         <div class="col-4 item-card" style="height: 600px; position: relative">
+             <div class="item-card" style="border: 1px solid LightGrey; border-radius: 5px; height: 100%">
+                 {% set item = items['items'][i * 3 + 2] %}
+                 <img src="/static/img/items/{{ item.photo_name }}" style="width: 100%; border-radius: 5px">
+                 <div class="item-card__bottom" style="padding: 5%">
+                     <h5 class="card-title">{{ item.name }}</h5>
+                     <a href="/item/{{ item.id }}" class="btn btn-primary" style="margin-bottom: 5%">Посмотреть</a>
+                 </div>
+             </div>
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+
+<div style="width: 20%; float: left; margin-top: 2%;">
+    <h3>
+        Особое предложение:
+    </h3>
+    <div class="card" align="center">
+        <img class="card-img-top" src="{{ special_offer.photo_name }}" alt="Card image cap">
+        <div class="card-body">
+            <h5 class="card-title">{{ special_offer.name }}</h5>
+            <p class="card-text">{{ special_offer.description }}</p>
+            <a href="/item/{{ special_offer.id }}" class="btn btn-primary">Посмотреть</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+{% endblock %}

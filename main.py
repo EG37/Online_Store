@@ -35,8 +35,18 @@ def main():
 
 @app.route('/')
 def main_menu():
+    session = db_session.create_session()
     store_settings = get_store_settings()
-    return render_template('base.html', **store_settings)
+    items = session.query(Item).all()
+    random.shuffle(items)
+    special_offer = items.pop()
+    special_offer.photo_name = url_for('static', filename=f'img/items/{special_offer.photo_name}')
+    special_offer.description = special_offer.description.split(';')[0]
+    items = {
+        'items': items,
+        'length': len(items) // 3
+    }
+    return render_template('main_page.html', special_offer=special_offer, items=items, **store_settings)
 
 
 @app.route('/refresh')
