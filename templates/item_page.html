@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content%}
+<h2 style="margin-left: 10%; margin-top: 2%">{{ name }}</h2>
+<div style="width: 30%; margin-left: 10%; margin-top: 2%; float: left; margin-right: 2%">
+    <img src="{{ source }}" style="width: 100%; border: 2px solid LightGrey">
+</div>
+<div style="float: left; margin-top: 2%;">
+    <h3>Особенности данного товара:</h3>
+    <ul>
+        {% for prop in properties%}
+        <li>{{ prop }}</li>
+        {% endfor %}
+    </ul>
+    <h3>Цена:</h3>
+    {% if discount_price == None %}
+    <div style="display: flex; align-items: center">
+        <h2 style="margin-right: 5px" align="center">{{ price }}</h2>
+        <img src="{{ currency }}" style="height: 35px; margin-top: 1%" align="center">
+    </div>
+    {% else %}
+    <div style="display: flex; align-items: center">
+        <h2 style="margin-right: 5px; text-decoration: line-through; color: grey" align="center">{{ price }}</h2>
+        <img src="{{ currency }}" style="height: 35px; margin-top: 1%; opacity: 0.5" align="center">
+        <h3 style="margin-right: 5px; background: #fff1f1; color: #ff4747; padding: 4px 10px; border-radius: 8px">-{{ discount }}%</h3>
+    </div>
+    <div style="display: flex; align-items: center">
+        <h2 style="margin-right: 5px" align="center">{{ discount_price }}</h2>
+        <img src="{{ currency }}" style="height: 35px; margin-top: 1%" align="center">
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
