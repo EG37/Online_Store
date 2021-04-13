@@ -1,6 +1,9 @@
 from flask import Flask, url_for, redirect, render_template
 from data import db_session
 from data.store import Store
+from data.category import Category
+from data.item import Item
+from data.currency import Currency
 import random
 
 
