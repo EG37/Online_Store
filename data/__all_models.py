@@ -1,1 +1,1 @@
-from . import store, item, currency, category
+from . import store, item, currency, category, user

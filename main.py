@@ -4,6 +4,7 @@ from data.store import Store
 from data.category import Category
 from data.item import Item
 from data.currency import Currency
+from data.user import User
 import random
 
 
