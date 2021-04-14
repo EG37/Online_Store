@@ -1,14 +1,21 @@
 from flask import Flask, url_for, redirect, render_template
+from flask_login import LoginManager, login_user, logout_user, login_required
 from data import db_session
 from data.store import Store
 from data.category import Category
 from data.item import Item
 from data.currency import Currency
 from data.user import User
+from forms.register_form import RegisterForm
+from forms.login_form import LoginForm
 import random
+import json
 
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'yandexlyceum_store_secret_key'
+login_manager = LoginManager()
+login_manager.init_app(app)
 db_session.global_init("db/store_database.db")
 store = Store()
 
@@ -84,6 +91,72 @@ def item_page(item_id):
             item_info['discount_price'] = None
             item_info['discount'] = None
         return render_template('item_page.html', **store_settings, **item_info)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Регистрация'
+    if form.validate_on_submit():
+        if form.password.data != form.password_again.data:
+            return render_template('register.html', form=form,
+                                   message="Пароли не совпадают", **store_settings)
+        if not form.age.data.isnumeric():
+            return render_template('register.html', form=form,
+                                   message="Неверный возраст", **store_settings)
+        db_sess = db_session.create_session()
+        if db_sess.query(User).filter(User.email == form.email.data).first():
+            return render_template('register.html', form=form,
+                                   message="Такой пользователь уже есть", **store_settings)
+        user = User(
+            name=form.name.data,
+            email=form.email.data,
+            surname=form.surname.data,
+            age=int(form.age.data),
+            address=form.address.data,
+            got_bonus=0
+        )
+        user.set_password(form.password.data)
+        db_sess.add(user)
+        db_sess.commit()
+        with open(f'accounts/user_{user.id}.json', 'w', encoding='utf-8') as jsonfile:
+            data = {'shopping_cart': {'items': [], 'summary': {}}, 'orders': {}, 'currencies': dict()}
+            for i in db_sess.query(Currency).all():
+                data['currencies'][i.id] = 0
+            json.dump(data, jsonfile)
+        return redirect("/")
+    return render_template('register.html', form=form, **store_settings)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Вход'
+    if form.validate_on_submit():
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == form.email.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember_me.data)
+            return redirect("/")
+        return render_template('login.html',
+                               message="Неправильный логин или пароль",
+                               form=form, **store_settings)
+    return render_template('login.html', form=form, **store_settings)
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    db_sess = db_session.create_session()
+    return db_sess.query(User).get(user_id)
+
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
 
 
 @app.route('/refresh')

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 style="margin-left: 10%">{{ title }}</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p style="margin-left: 10%; width: 80%">
+            {{ form.email.label }}<br>
+            {{ form.email(class="form-control", type="email") }}<br>
+            {% for error in form.email.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p style="margin-left: 10%; width: 80%">
+            {{ form.password.label }}<br>
+            {{ form.password(class="form-control", type="password") }}<br>
+            {% for error in form.password.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p style="margin-left: 10%">{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p style="margin-left: 10%">{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        {% if message %}
+            <div class="alert alert-warning" style="margin-left: 10%">{{ message }}</div>
+        {% endif %}
+    </form>
+    <div style="margin-left: 10%">
+        У вас нет аккаунта?<a href="/register"> Зарегистрироваться</a>
+    </div>
+{% endblock %}

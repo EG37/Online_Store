@@ -39,6 +39,29 @@
                     </font>
                 </a>
             </div>
+            {% if not current_user.is_authenticated %}
+            <div align="right" style="width: 7%">
+                <div align="center">
+                    <a href="/login">
+                        <img src="/static/img/login.png" align="center" width="40%"><br>
+                        <p align="center">
+                            <font class="main-font">Войти</font>
+                        </p>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div align="right" style="width: 7%">
+                <div align="center">
+                    <a href="/user_page">
+                        <img src="/static/img/login.png" align="center" width="40%"><br>
+                        <p align="center">
+                            <font class="main-font">{{ current_user.name }}</font>
+                        </p>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </nav>
 </header>
