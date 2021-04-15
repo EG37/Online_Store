@@ -1,5 +1,5 @@
 from flask import Flask, url_for, redirect, render_template
-from flask_login import LoginManager, login_user, logout_user, login_required
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data import db_session
 from data.store import Store
 from data.category import Category
@@ -163,6 +163,42 @@ def logout():
 def refresh():
     set_current_store()
     return redirect('/')
+
+
+@app.route('/user_page')
+@login_required
+def user_page():
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Личный кабинет'
+    db_sess = db_session.create_session()
+    with open(f'accounts/user_{current_user.id}.json', 'r', encoding='utf-8') as jsonfile:
+        data = json.load(jsonfile)['currencies']
+    money = []
+    for i in data.keys():
+        logo = db_sess.query(Currency).filter(Currency.id == int(i)).first().logotype
+        money.append(
+            [url_for('static', filename=f'img/currencies/{logo}'), data[i]])
+    return render_template('user_page.html', money=money, **store_settings)
+
+
+@app.route('/get_bonus')
+@login_required
+def get_bonus():
+    with open(f'accounts/user_{current_user.id}.json', 'r+', encoding='utf-8') as jsonfile:
+        data = json.load(jsonfile)
+        jsonfile.seek(0)
+        db_sess = db_session.create_session()
+        for i in db_sess.query(Currency).all():
+            money = random.randint(0, 9999)
+            if i.is_integer == 0:
+                money /= 10 ** random.randint(0, len(str(money)))
+            data['currencies'][str(i.id)] += money
+        json.dump(data, jsonfile)
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        user.got_bonus = 1
+        current_user.got_bonus = 1
+        db_sess.commit()
+    return redirect(f'/user_page')
 
 
 if __name__ == '__main__':

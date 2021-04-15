@@ -11,3 +11,10 @@
     face: Bahnschrift;
     size: 4;
 }
+
+.basic {
+    margin-left: 10%;
+    width: 80%;
+    margin-top: 1%;
+    font-face: Bahnschrift
+}

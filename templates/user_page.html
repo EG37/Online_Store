@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content%}
+
+{% if message %}
+    <div class="alert alert-success" style="width: 80%; margin-left: 10%">{{ message }}</div>
+{% endif %}
+
+<h1 class="basic">{{ title }}</h1>
+<div class="basic" style="width: 17%; border: solid LightGrey 2px">
+    <img src="/static/img/login.png" style="width: 100%">
+</div>
+
+<h2 class="basic">{{ current_user.name }} {{current_user.surname}}</h2>
+<h4 class="basic">Адрес электронной почты: {{ current_user.email }}</h4>
+<h4 class="basic">Адрес доставки: {{ current_user.address }}</h4>
+<h4 class="basic">Возраст: {{ current_user.age }}</h4>
+<a class="btn btn-light" href="/edit_account" role="button" style="margin-left: 10%; margin-bottom: 1%">Изменить данные</a>
+<br>
+<div style="display: flex; align-items: center; margin-left: 10%">
+    <div align="left" style="margin-right: 1%">
+        <a class="btn btn-warning" href="/shopping_cart" role="button">Корзина</a>
+    </div>
+    <div align="left">
+        <a class="btn btn-primary" href="/orders" role="button">Заказы</a>
+    </div>
+</div>
+<br>
+{% if current_user.got_bonus == 0 %}
+<a class="btn btn-success" href="/get_bonus" role="button" style="margin-left: 10%">Получить бесплатный бонус</a>
+{% endif %}
+<h2 class="basic">Ваш мультивалютный счёт:</h2>
+{% for item in money %}
+<div style="display: flex; align-items: center" class="basic">
+    <h3 style="margin-right: 5px" align="center">{{ item[1] }}</h3>
+    <img src="{{ item[0] }}" style="height: 35px; margin-bottom: 0.5%" align="center">
+</div>
+{% endfor %}
+<br>
+<div align="right" style="margin-right: 10%">
+    <a class="btn btn-danger" href="/logout" role="button" style="width: 10%; height: 4%; margin-bottom: 5%">Выйти</a>
+</div>
+{% endblock %}
