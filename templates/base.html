@@ -50,6 +50,14 @@
                     </a>
                 </div>
             </div>
+            <div align="right" style="width: 7%; opacity: 50%">
+                <div align="center">
+                    <img src="/static/img/shopping_cart.png" align="center" width="40%"><br>
+                    <p align="center">
+                        <font class="main-font" style="opacity: 70%">Корзина</font>
+                    </p>
+                </div>
+            </div>
             {% else %}
             <div align="right" style="width: 7%">
                 <div align="center">
@@ -57,6 +65,16 @@
                         <img src="/static/img/login.png" align="center" width="40%"><br>
                         <p align="center">
                             <font class="main-font">{{ current_user.name }}</font>
+                        </p>
+                    </a>
+                </div>
+            </div>
+            <div align="right" style="width: 7%">
+                <div align="center">
+                    <a href="/shopping_cart">
+                        <img src="/static/img/shopping_cart.png" align="center" width="40%"><br>
+                        <p align="center">
+                            <font class="main-font">Корзина</font>
                         </p>
                     </a>
                 </div>

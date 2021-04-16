@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect, render_template
+from flask import Flask, url_for, redirect, render_template, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from data import db_session
 from data.store import Store
@@ -199,6 +199,69 @@ def get_bonus():
         current_user.got_bonus = 1
         db_sess.commit()
     return redirect(f'/user_page')
+
+
+@app.route('/add_to_cart')
+@login_required
+def add_to_cart():
+    info = dict()
+    for i in ['item_id', 'currency_id', 'price', 'discount', 'discount_price']:
+        info[i] = request.args.get(i)
+    with open(f'accounts/user_{current_user.id}.json', 'r+', encoding='utf-8') as jsonfile:
+        data = json.load(jsonfile)
+        data['shopping_cart']['items'].append(info)
+        if info['currency_id'] not in data['shopping_cart']['summary'].keys():
+            data['shopping_cart']['summary'][info['currency_id']] = 0
+        if info['discount_price'] != 'None':
+            data['shopping_cart']['summary'][info['currency_id']] += float(info['discount_price'])
+        else:
+            data['shopping_cart']['summary'][info['currency_id']] += float(info['price'])
+        jsonfile.seek(0)
+        json.dump(data, jsonfile)
+    return redirect('/')
+
+
+@app.route('/shopping_cart')
+@login_required
+def shoppping_cart(message=None):
+    items = []
+    summary = {}
+    currencies = dict()
+    db_sess = db_session.create_session()
+    for i in db_sess.query(Currency).all():
+        currencies[str(i.id)] = url_for('static', filename=f'img/currencies/{i.logotype}')
+    with open(f'accounts/user_{current_user.id}.json', 'r+', encoding='utf-8') as jsonfile:
+        data = json.load(jsonfile)
+        for i in data['shopping_cart']['items']:
+            item = db_sess.query(Item).filter(Item.id == i['item_id']).first()
+            items.append({'name': item.name, 'price': i['price'], 'discount': i['discount'],
+                          'discount_price': i['discount_price'], 'currency': currencies[i['currency_id']],
+                          'image': url_for('static', filename=f'img/items/{item.photo_name}'), 'id': i['item_id']})
+        for i in data['shopping_cart']['summary'].keys():
+            summary[i] = {'currency': currencies[i], 'price':  data['shopping_cart']['summary'][i]}
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Корзина'
+    return render_template('shopping_cart.html', items=items, summary=summary, message=message, **store_settings)
+
+
+@app.route('/delete_from_cart/<int:item_id>')
+@login_required
+def delete_from_cart(item_id):
+    with open(f'accounts/user_{current_user.id}.json', 'r+', encoding='utf-8') as jsonfile:
+        data = json.load(jsonfile)
+        for i in range(len(data['shopping_cart']['items'])):
+            if data['shopping_cart']['items'][i]['item_id'] == str(item_id):
+                item = data['shopping_cart']['items'][i]
+                del data['shopping_cart']['items'][i]
+                if item['discount_price'] == 'None':
+                    data['shopping_cart']['summary'][item['currency_id']] -= float(item['price'])
+                else:
+                    data['shopping_cart']['summary'][item['currency_id']] -= float(item['discount_price'])
+                break
+        jsonfile.seek(0)
+        jsonfile.truncate()
+        json.dump(data, jsonfile)
+    return redirect('/shopping_cart')
 
 
 if __name__ == '__main__':

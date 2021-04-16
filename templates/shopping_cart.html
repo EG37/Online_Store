@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if message %}
+    <div class="alert alert-danger" style="width: 80%; margin-left: 10%; margin-top: 2%">{{ message }}</div>
+{% endif %}
+
+{% if items != [] %}
+<h1 class="basic">{{ title }}</h1>
+<div style="display: flex; align-items: center; position: absolute; width: 100%">
+    <div class="basic" style="width: 60%; margin-bottom: 10%">
+        {% for item in items %}
+        <div style="display: flex; align-items: center; border: solid LightGrey 1px; border-radius: 10px; margin-bottom: 2%">
+            <a href="item/{{ item['id'] }}" style="width: 25%">
+                <img src="{{ item['image'] }}" style="border-radius: 10px; width: 100%">
+            </a>
+            <div style="width: 75%; height: 100%; margin: 2%">
+                <h2>{{ item['name'] }}</h2>
+                {% if item['discount'] == 'None' %}
+                <div style="display: flex; align-items: center">
+                    <h3 style="margin-right: 5px" align="center">{{ item['price'] }}</h3>
+                    <img src="{{ item['currency'] }}" style="height: 35px; margin-bottom: 0.5%" align="center">
+                </div>
+                {% else %}
+                <div style="display: flex; align-items: center">
+                    <h2 style="margin-right: 5px; text-decoration: line-through; color: grey" align="center">{{ item['price'] }}</h2>
+                    <img src="{{ currency }}" style="height: 35px; margin-bottom: 0.5%; opacity: 0.5" align="center">
+                    <h3 style="margin-right: 5px; background: #fff1f1; color: #ff4747; padding: 4px 10px; border-radius: 8px">-{{ item['discount'] }}%</h3>
+                </div>
+                <div style="display: flex; align-items: center">
+                    <h2 style="margin-right: 5px" align="center">{{ item['discount_price'] }}</h2>
+                    <img src="{{ item['currency'] }}" style="height: 35px; margin-top: 1%" align="center">
+                </div>
+                {% endif %}
+                <a class="btn btn-danger" href="/delete_from_cart/{{ item['id'] }}" role="button" style="margin-bottom: 2%">Удалить</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="basic" style="width: 23%; border: solid LightGrey 1px; border-radius: 10px; margin-bottom: 2%; padding: 1%; position: absolute; top: 0px; left: 61%">
+        <h1>Сумма заказа: </h1>
+        {% for key in summary.keys() %}
+        {% if summary[key]['price'] != 0%}
+        <div style="display: flex; align-items: center; ">
+            <h3 style="margin-right: 5px" align="center">{{ summary[key]['price'] }}</h3>
+            <img src="{{ summary[key]['currency'] }}" style="height: 35px; margin-bottom: 0.5%" align="center">
+        </div>
+        {% endif %}
+        {% endfor %}
+        <a class="btn btn-success" href="/order" role="button" style="margin-top: 2%">Оформить заказ</a>
+    </div>
+</div>
+{% else %}
+<h1 class="basic">У вас ещё нет товаров </h1>
+{% endif %}
+
+{% endblock %}
