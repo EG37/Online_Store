@@ -8,6 +8,7 @@ from data.currency import Currency
 from data.user import User
 from forms.register_form import RegisterForm
 from forms.login_form import LoginForm
+from forms.search_form import SearchForm
 import random
 import json
 
@@ -262,6 +263,41 @@ def delete_from_cart(item_id):
         jsonfile.truncate()
         json.dump(data, jsonfile)
     return redirect('/shopping_cart')
+
+
+@app.route('/search', methods=['GET', 'POST'])
+def search_page():
+    form = SearchForm()
+    db_sess = db_session.create_session()
+    form.category.choices = ['Всё']
+    form.category.choices.extend([i.name for i in db_sess.query(Category).all()])
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Поиск'
+    if form.validate_on_submit():
+        if form.category.data != 'Всё':
+            category_id = db_sess.query(Category).filter(Category.name == form.category.data).first().id
+            items = db_sess.query(Item).filter(Item.name.like(f"%{form.name.data}%"), Item.category == category_id).all()
+        else:
+            items = db_sess.query(Item).filter(Item.name.like(f"%{form.name.data}%")).all()
+        items = {'items': items, 'rows': len(items) // 3 if len(items) % 3 == 0 else len(items) // 3 + 1,
+                 'length': len(items)}
+        return render_template('search.html', items=items, form=form, **store_settings)
+    return render_template('search.html', items={'items': []}, form=form, **store_settings)
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('404.html')
+
+
+@app.errorhandler(401)
+def unauthorized(error):
+    return render_template('401.html')
+
+
+@app.errorhandler(500)
+def server_error(error):
+    return render_template('500.html')
 
 
 if __name__ == '__main__':

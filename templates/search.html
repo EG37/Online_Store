@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="basic">{{ title }}</h1>
+
+<form action="" method="post" style="display: flex; align-items: center">
+    {{ form.hidden_tag() }}
+    <p style="width: 15%; margin-left: 10%">
+        {{ form.category.label }}
+        {{ form.category(class="form-control", type="string") }}<br>
+        {% for error in form.category.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p style="margin-left: 1%; width: 43%">
+        {{ form.name.label }}
+        {{ form.name(class="form-control", type="string") }}<br>
+        {% for error in form.name.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p style="margin-left: 1%; margin-top: 0.5%">{{ form.submit(type="submit", class="btn btn-success") }}</p>
+</form>
+{% if items['items'] == [] %}
+<h2 class="basic">Ничего не найдено!</h2>
+{% else %}
+<h2 class="basic" style="margin-top: 1%">Результаты поиска:</h2>
+<div class="container" style="width: 100%; float: left; margin-left: 9%">
+    {% for i in range(items['rows']) %}
+        <div class="row" style="margin-bottom: 4%">
+            {% for j in range(3) %}
+                {% if items['length'] > i * 3 + j %}
+                    <div class="col-4 item-card" style="height: 600px; position: relative">
+                        <div class="item-card" style="border: 1px solid LightGrey; border-radius: 5px; height: 100%">
+                            {% set item = items['items'][i * 3 + j] %}
+                            <img src="/static/img/items/{{ item.photo_name }}" style="width: 100%; border-radius: 5px">
+                            <div class="item-card__bottom" style="padding: 5%">
+                                <h5 class="card-title">{{ item.name }}</h5>
+                                <a href="/item/{{ item.id }}" class="btn btn-primary" style="margin-bottom: 5%">Посмотреть</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
