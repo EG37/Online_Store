@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% if orders == {} %}
+<h1 class="basic">У вас ещё нет заказов</h1>
+{% else %}
+<h1 class="basic">Ваши заказы:</h1>
+{% for number in orders.keys() %}
+<a href="/order/{{number}}" style="color: #000000">
+    <div class="basic" style="width: 60%; border: solid LightGrey 1px; border-radius: 10px; padding: 1%">
+        <h2>Заказ №{{number}}</h2>
+        <a class="btn btn-danger" href="/delete_order/{{number}}" role="button">Удалить</a>
+    </div>
+</a>
+{% endfor %}
+{% endif %}
+{% endblock %}
