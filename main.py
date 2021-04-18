@@ -480,6 +480,54 @@ def refund_order(order_id):
     return delete_order(order_id)
 
 
+# Страница обмена валют
+@app.route('/exchange')
+@login_required
+def exchange(message=None):
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Обмен валют'
+    db_sess = db_session.create_session()
+    data = []
+    currencies = db_sess.query(Currency).all()
+    # Случайное определение валюты и цены
+    for i in currencies:
+        j = random.choice(currencies)
+        price = random.randint(0, 9999)
+        price /= 10 ** random.randint(0, len(str(price)))
+        if j.is_integer == 1:
+            price = int(price)
+        # Занесение курса в список
+        data.append({'first_id': i.id, 'first_logo': url_for('static', filename=f'img/currencies/{i.logotype}'),
+                     'second_id': j.id, 'second_logo': url_for('static', filename=f'img/currencies/{j.logotype}'),
+                     'amount': price})
+    return render_template('exchange.html', message=message, data=data, **store_settings)
+
+
+# Обработка обмена валют
+@app.route('/change_currencies')
+@login_required
+def change_currencies():
+    info = dict()
+    # Получение данных из запроса
+    for i in ['first_id', 'second_id', 'amount']:
+        info[i] = request.args.get(i)
+    # Загрузка данных пользователя
+    with open(f'accounts/user_{current_user.id}.json', 'r+', encoding='utf-8') as jsonfile:
+        data = json.load(jsonfile)
+        # Проверка наличия достаточного количества денег у пользователя
+        if data['currencies'][info['first_id']] < 1:
+            return exchange('На вашем счёте недостаточно средств для совершения обмена')
+        else:
+            # Совершение обмена
+            data['currencies'][info['first_id']] -= 1
+            data['currencies'][info['second_id']] += float(info['amount'])
+            # Перезапись данных
+            jsonfile.seek(0)
+            jsonfile.truncate()
+            json.dump(data, jsonfile)
+            return redirect('/exchange')
+
+
 # Замена стандартных страниц ошибок
 @app.errorhandler(404)
 def not_found(error):
