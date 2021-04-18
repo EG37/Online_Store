@@ -50,6 +50,21 @@ def main():
     app.run(port=8080, host='127.0.0.1')
 
 
+def check_password(password):
+    if len(password) < 8:
+        return 'Длина пароля должна составлять как минимум 8 символов'
+    if len([i for i in password if i.isnumeric()]) < 2:
+        return 'Пароль должен содержать как минимум 2 цифры'
+    if len([i for i in password if i.isalpha()]) < 6:
+        return 'Пароль должен содержать как минимум 6 букв'
+    if len([i for i in password if i.isalnum()]) != len(password):
+        return 'Пароль не может содержать спецсимволы'
+    if password.islower():
+        return 'Пароль должен содержать как минимум одну заглавную букву'
+    if password.isupper():
+        return 'Пароль должен содержать как минимум одну строчную букву'
+
+
 # Главная страница
 @app.route('/')
 def main_page():
@@ -57,10 +72,10 @@ def main_page():
     session = db_session.create_session()
     # Получение данных текущего магазина
     store_settings = get_store_settings()
-    categories = []
     items = session.query(Item).all()
     # Перестановка товаров в случайном порядке
     random.shuffle(items)
+    items = items[:len(items) // 4]
     # Выбор товара для особого предложения
     special_offer = items.pop()
     # Установка фото и описания для особого предложения
@@ -69,7 +84,8 @@ def main_page():
     # Создание словаря для товаров на главной странице
     items = {
         'items': items,
-        'length': len(items) // 3
+        'rows': len(items) // 3 if len(items) % 3 == 0 else len(items) // 3 + 1,
+        'length': len(items)
     }
     return render_template('main_page.html', special_offer=special_offer, items=items, **store_settings)
 
@@ -133,6 +149,9 @@ def register():
         if form.password.data != form.password_again.data:
             return render_template('register.html', form=form,
                                    message="Пароли не совпадают", **store_settings)
+        if check_password(form.password.data):
+            return render_template('register.html', form=form,
+                                   message=check_password(form.password.data), **store_settings)
         if not form.age.data.isnumeric():
             return render_template('register.html', form=form,
                                    message="Неверный возраст", **store_settings)
@@ -176,9 +195,14 @@ def login():
             login_user(user, remember=form.remember_me.data)
             return redirect("/")
         # Возврат страницы с сообщением в случае ошибки
-        return render_template('login.html',
-                               message="Неправильный логин или пароль",
-                               form=form, **store_settings)
+        elif not user:
+            return render_template('login.html',
+                                   message="Пользователь не найден",
+                                   form=form, **store_settings)
+        elif not user.check_password(form.password.data):
+            return render_template('login.html',
+                                   message="Неверный пароль",
+                                   form=form, **store_settings)
     return render_template('login.html', form=form, **store_settings)
 
 
@@ -528,6 +552,22 @@ def change_currencies():
             return redirect('/exchange')
 
 
+# FAQ по доставке
+@app.route('/delivery_info')
+def delivery_info():
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Условия доставки'
+    return render_template('delivery.html', **store_settings)
+
+
+# Общее FAQ
+@app.route('/faq')
+def faq():
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Частые вопросы'
+    return render_template('faq.html', **store_settings)
+
+
 # Замена стандартных страниц ошибок
 @app.errorhandler(404)
 def not_found(error):
@@ -544,5 +584,6 @@ def server_error(error):
     return render_template('500.html')
 
 
+# Главный цикл
 if __name__ == '__main__':
     main()

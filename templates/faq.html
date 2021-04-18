@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="basic">{{ title }}</h1>
+
+<div class="basic">
+    <p>
+      <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        Куда я попал?
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+      <div class="card card-body">
+          Вы попали на сайт интернет-магазина случайных товаров. Здесь вы можете купить абсолютно любой товар по любой
+          цене в любой валюте. Цена, наличие и размер скидки определяются в момент перехода на страницу товара и остаются
+          таковыми при добавлении товара в корзину и оформлении заказа. В связи с непредвиденными обстоятельствами мы были
+          вынуждены ограничить количество товаров, доступных к заказу на нашем сайте, а также количество валют, принимаемых
+          для оплаты.
+      </div>
+    </div>
+</div>
+
+<div class="basic">
+    <p>
+      <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample4" aria-expanded="false" aria-controls="collapseExample">
+        Как мне оплатить заказ?
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample4">
+      <div class="card card-body">
+          Средства будут автоматически списаны с вашего счёта на сайте. К сожалению, другие способы оплаты временно недоступны.
+      </div>
+    </div>
+</div>
+
+<div class="basic">
+    <p>
+      <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample1" aria-expanded="false" aria-controls="collapseExample">
+        Как мне пополнить счёт?
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample1">
+      <div class="card card-body">
+          Никак. В связи с вышеупомянутыми непредвиденными обстоятельствами мы временно отключили возможность поплнения
+          счёта из сторонних источников. Вы можете получить бесплатный одноразовый стартовый бонус в личном кабинете или
+          купить товары с отрицательной ценой для пополнения счёта.
+      </div>
+    </div>
+</div>
+
+<div class="basic">
+    <p>
+      <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample">
+        Какие валюты вы принимаете ?
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample2">
+      <div class="card card-body">
+          Проведя подробный анализ рынка, мы отобрали наиболее популярные валюты. Они включают рубли, доллары, евро, фунты,
+          тугрики, биткоины, патроны, универсальные единицы энергии, время, теонит, человеческие души, чипы, материю и лягушек.
+      </div>
+    </div>
+</div>
+
+<div class="basic" style="margin-bottom: 5%">
+    <p>
+      <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample3" aria-expanded="false" aria-controls="collapseExample">
+        Услуги доставки
+      </button>
+    </p>
+    <div class="collapse" id="collapseExample3">
+      <div class="card card-body">
+          Подробнее о доставке вы можете узнать <a href="/delivery_info">здесь</a>
+      </div>
+    </div>
+</div>
+
+{% endblock %}
