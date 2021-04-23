@@ -206,6 +206,44 @@ def login():
     return render_template('login.html', form=form, **store_settings)
 
 
+# Страница изменения данных аккаунта
+@app.route('/edit_account', methods=['GET', 'POST'])
+@login_required
+def edit_account():
+    store_settings = get_store_settings()
+    store_settings['title'] = 'Изменить данные'
+    edit_form = RegisterForm()
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.id == current_user.id).first()
+    if not user:
+        return abort(404)
+    # Заполенение формы уже имеющимися данными
+    if request.method == "GET":
+        edit_form.email.data = user.email
+        edit_form.name.data = user.name
+        edit_form.surname.data = user.surname
+        edit_form.age.data = user.age
+        edit_form.address.data = user.address
+    # Проверка правильностьи введённых данных в случае подтверждения формы
+    if edit_form.validate_on_submit():
+        if edit_form.password.data != edit_form.password_again.data:
+            return render_template('register.html', form=edit_form,
+                                   message="Пароли не совпадают", **store_settings)
+        if not edit_form.age.data.isnumeric():
+            return render_template('register.html', form=edit_form,
+                                   message="Неверный возраст", **store_settings)
+        # Перезапись данных пользователя
+        user.email = edit_form.email.data
+        user.name = edit_form.name.data
+        user.surname = edit_form.surname.data
+        user.age = int(edit_form.age.data)
+        user.address = edit_form.address.data
+        user.set_password(edit_form.password.data)
+        db_sess.commit()
+        return redirect('/user_page')
+    return render_template('register.html', form=edit_form, **store_settings)
+
+
 # Загрузка пользователя из базы данных
 @login_manager.user_loader
 def load_user(user_id):
